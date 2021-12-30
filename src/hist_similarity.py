@@ -1,4 +1,4 @@
-import cv
+import cv2 as cv
 
 
 def compare_img_hist(img1, img2):
@@ -16,10 +16,18 @@ def compare_img_hist(img1, img2):
     # Get the histogram data of image 1, then using normalize the picture for better compare
     img1_hist = cv.calcHist([img1], [1], None, [256], [0, 256])
     img1_hist = cv.normalize(img1_hist, img1_hist, 0, 1, cv.NORM_MINMAX, -1)
-    ​
+
     img2_hist = cv.calcHist([img2], [1], None, [256], [0, 256])
     img2_hist = cv.normalize(img2_hist, img2_hist, 0, 1, cv.NORM_MINMAX, -1)
-    ​
+
     similarity = cv.compareHist(img1_hist, img2_hist, 0)
-    ​
+
     return similarity
+
+if __name__ == "__main__":
+    refer_dir = "../img/refer.png"
+    test_dir = "../img/late.png"
+    refer = cv.imread(refer_dir)
+    test = cv.imread(test_dir)
+    similarity = compare_img_hist(refer, test)
+    print("The Similarity of test to reference = {}".format(similarity))
