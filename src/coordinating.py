@@ -1,3 +1,4 @@
+import sys
 import cv2 as cv
 import math
 import matplotlib.pyplot as plt
@@ -34,7 +35,7 @@ def get_drawing_range(img, axis):
 def get_circle_radius(img):
     (left, right) = get_drawing_range(img, 0)
     (bottom, top) = get_drawing_range(img, 1)
-    radius = (top - bottom) / 2 if ((top - bottom) / 2) > ((right - left) / 2) else (right - left) / 2
+    radius = (top - bottom) / 2 if ((top - bottom) / 2) < ((right - left) / 2) else (right - left) / 2
     return (radius, (right - left) / 2, (top - bottom) / 2)
 
 def get_drawing_point_coord(img, x):
@@ -68,10 +69,14 @@ def sample_and_diff(img):
     width = img.shape[1]
     power2_delta = 0
     (radius, origin_x, origin_y) = get_circle_radius(img)
+    print("radius = {}, origin_x = {}, origin_y = {}".format(radius, origin_x, origin_y))
     (left, right) = get_drawing_range(img, 0)
     for x in range(left, right):
         (bottom, top) = get_drawing_point_coord(img, x)
         (y1, y2) = get_inscribed_circle_coord(origin_x, origin_y, radius, x)
+        if y1 == y2:
+            break
+        print("x = {}, bottom = {}, y1 = {}, --|-- top = {}, y2 = {}".format(x, bottom, y1, top, y2))
         power2_delta += (y1 - bottom) * (y1 - bottom) + (y2 - top) * (y2 - top)
     power2_delta = power2_delta / ((right - left) * radius * radius)
     return power2_delta
@@ -105,9 +110,5 @@ def coordinate_img(img_dir):
     # cv.imwrite("../tmp/" + img_dir.split("/")[2].split(".")[0] + "_bin.png", img)
 
 if __name__ == "__main__":
-    refer_dir = "../imgs/1.png"
-    test_dir = "../imgs/late.png"
-    print("================= coordinate the standard cdt image ===============")
-    coordinate_img(refer_dir)
-    print("================= coordinate the test cdt image ===============")
-    coordinate_img(test_dir)
+    img_dir = sys.argv[1]
+    coordinate_img(img_dir)
