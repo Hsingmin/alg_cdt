@@ -76,7 +76,7 @@ def sample_and_diff(img):
         (y1, y2) = get_inscribed_circle_coord(origin_x, origin_y, radius, x)
         if y1 == y2:
             break
-        print("x = {}, bottom = {}, y1 = {}, --|-- top = {}, y2 = {}".format(x, bottom, y1, top, y2))
+        # print("x = {}, bottom = {}, y1 = {}, --|-- top = {}, y2 = {}".format(x, bottom, y1, top, y2))
         power2_delta += (y1 - bottom) * (y1 - bottom) + (y2 - top) * (y2 - top)
     power2_delta = power2_delta / ((right - left) * radius * radius)
     return power2_delta
@@ -105,7 +105,10 @@ def coordinate_img(img_dir):
             if (col < width * eer) or (col > width * (1 - eer)) or (row > height * (1 - eer)) or (row < height * eer):
                 img[row][col] = 255
                 # print("img[{}][{}] = {}".format(col, row, img[col][row]))
-    score_circle = sample_and_diff(img)
+    score_circle = 2 - sample_and_diff(img)
+    score_circle = 0 if score_circle < 0 else score_circle
+    score_circle = 2 if score_circle > 2 else score_circle
+
     print("get score of circle {}: {}".format(img_dir, score_circle))
     # cv.imwrite("../tmp/" + img_dir.split("/")[2].split(".")[0] + "_bin.png", img)
 
